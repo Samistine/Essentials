@@ -43,6 +43,12 @@ public class Commandafk extends EssentialsCommand
 
 	private void toggleAfk(User user)
 	{
+		//Begin Samistine
+		if (user.isMuted()) {
+			user.sendMessage("You can't do that while you are muted!");
+			return;
+		}
+		//End Samistine
 		user.setDisplayNick();
 		String msg = "";
 		if (!user.toggleAfk())

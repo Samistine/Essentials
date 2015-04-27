@@ -10,6 +10,7 @@ import org.bukkit.Server;
 
 public class Commandmotd extends EssentialsCommand
 {
+	private IText inputCache;
 	public Commandmotd()
 	{
 		super("motd");
@@ -23,8 +24,11 @@ public class Commandmotd extends EssentialsCommand
 			ess.getUser(sender.getPlayer()).setDisplayNick();
 		}
 		
-		final IText input = new TextInput(sender, "motd", true, ess);
-		final IText output = new KeywordReplacer(input, sender, ess);
+		if (inputCache == null) {
+			final IText input = new TextInput(sender, "motd", true, ess);
+			inputCache = input;
+		}
+		final IText output = new KeywordReplacer(inputCache, sender, ess);
 		final TextPager pager = new TextPager(output);
 		pager.showPage(args.length > 0 ? args[0] : null, args.length > 1 ? args[1] : null, commandLabel, sender);
 	}

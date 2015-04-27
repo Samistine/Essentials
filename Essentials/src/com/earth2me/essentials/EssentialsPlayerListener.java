@@ -222,7 +222,6 @@ public class EssentialsPlayerListener implements Listener
 		ess.getBackup().onPlayerJoin();
 		final User dUser = ess.getUser(player);
 
-
 		if (dUser.isNPC())
 		{
 			dUser.setNPC(false);
@@ -260,20 +259,51 @@ public class EssentialsPlayerListener implements Listener
 			@Override
 			public void run()
 			{
-				final User user = ess.getUser(player);
+				long begin = System.currentTimeMillis();
 
+				//long b1 = System.currentTimeMillis();
+				if (!player.isOnline()) { //Safety, ehh?
+					return;
+				}
+				final User user = ess.getUser(player);
+				//long e1 = System.currentTimeMillis();
+				//System.err.println("'ess.getUser(player)' took " + (e1 - b1) + "ms");
+
+				//long b2 = System.currentTimeMillis();;
 				if (!user.getBase().isOnline())
 				{
 					return;
 				}
+				//long e2 = System.currentTimeMillis();;
+				//System.err.println("'!user.getBase().isOnline()' took " + (e2 - b2) + "ms");
 
+				//long b3 = System.currentTimeMillis();
 				user.startTransaction();
+				//long e3 = System.currentTimeMillis();
+				//System.err.println("'user.startTransaction()' took " + (e3 - b3) + "ms");
 
+				//long b4 = System.currentTimeMillis();
 				user.setLastAccountName(user.getBase().getName());
-				user.setLastLogin(currentTime);
-				user.setDisplayNick();
-				updateCompass(user);
+				//long e4 = System.currentTimeMillis();
+				//System.err.println("'user.setLastAccountName(user.getBase().getName())' took " + (e4 - b4) + "ms");
 
+				//long b5 = System.currentTimeMillis();
+				user.setLastLogin(currentTime);
+				//long e5 = System.currentTimeMillis();
+				//System.err.println("'user.setLastLogin(currentTime)' took " + (e5 - b5) + "ms");
+
+				//long b6 = System.currentTimeMillis();
+				user.setDisplayNick();
+				//long e6 = System.currentTimeMillis();
+				//System.err.println("'user.setDisplayNick()' took " + (e6 - b6) + "ms");
+				
+				//long b7 = System.currentTimeMillis();
+				//Not Needed
+				//updateCompass(user);
+				//long e7 = System.currentTimeMillis();
+				//System.err.println("'updateCompass(user)' took " + (e7 - b7) + "ms");
+
+				//long b8 = System.currentTimeMillis();
 				if (!ess.getVanishedPlayers().isEmpty() && !user.isAuthorized("essentials.vanish.see"))
 				{
 					for (String p : ess.getVanishedPlayers())
@@ -285,13 +315,20 @@ public class EssentialsPlayerListener implements Listener
 						}
 					}
 				}
+				//long e8 = System.currentTimeMillis();
+				//System.err.println("'Hide vanished players (snippet 8)' took " + (e8 - b8) + "ms");
 
-				if (user.isAuthorized("essentials.sleepingignored"))
+				//long b9 = System.currentTimeMillis();
+				/*if (user.isAuthorized("essentials.sleepingignored")) ##Causes to much lag##
 				{
 					user.getBase().setSleepingIgnored(true);
-				}
+				}*/
+				//long e9 = System.currentTimeMillis();
+				//System.err.println("'Sleeping ignored (snippet 9)' took " + (e9 - b9) + "ms");
 
-				if (ess.getSettings().allowSilentJoinQuit() && (user.isAuthorized("essentials.silentjoin") || user.isAuthorized("essentials.silentjoin.vanish")))
+				//long b10 = System.currentTimeMillis();
+				//Don't need join messages for my server
+				/*if (ess.getSettings().allowSilentJoinQuit() && (user.isAuthorized("essentials.silentjoin") || user.isAuthorized("essentials.silentjoin.vanish")))
 				{
 					if (user.isAuthorized("essentials.silentjoin.vanish"))
 					{
@@ -312,15 +349,21 @@ public class EssentialsPlayerListener implements Listener
 				else if (ess.getSettings().allowSilentJoinQuit())
 				{
 					ess.getServer().broadcastMessage(message);
-				}
+				}*/
+				//long e10 = System.currentTimeMillis();
+				//System.err.println("'Join Broadcast (snippet 10)' took " + (e10 - b10) + "ms");
 
+				//long b11 = System.currentTimeMillis();
 				if (input != null && user.isAuthorized("essentials.motd"))
 				{
 					final IText output = new KeywordReplacer(input, user.getSource(), ess);
 					final TextPager pager = new TextPager(output, true);
 					pager.showPage("1", null, "motd", user.getSource());
 				}
+				//long e11 = System.currentTimeMillis();
+				//System.err.println("'Motd (snippet 11)' took " + (e11 - b11) + "ms");
 
+				//long b12 = System.currentTimeMillis();
 				if (!ess.getSettings().isCommandDisabled("mail") && user.isAuthorized("essentials.mail"))
 				{
 					final List<String> mail = user.getMails();
@@ -333,8 +376,12 @@ public class EssentialsPlayerListener implements Listener
 						user.sendMessage(tl("youHaveNewMail", mail.size()));
 					}
 				}
+				//long e12 = System.currentTimeMillis();
+				//System.err.println("'mail (snippet 12)' took " + (e12 - b12) + "ms");
 
-				if (user.isAuthorized("essentials.fly.safelogin"))
+				//long b13 = System.currentTimeMillis();
+				//Don't need this for my server
+				/*if (user.isAuthorized("essentials.fly.safelogin"))
 				{
 					user.getBase().setFallDistance(0);
 					if (LocationUtil.shouldFly(user.getLocation()))
@@ -343,15 +390,27 @@ public class EssentialsPlayerListener implements Listener
 						user.getBase().setFlying(true);
 						user.getBase().sendMessage(tl("flyMode", tl("enabled"), user.getDisplayName()));
 					}
-				}
+				}*/
+				//long e13 = System.currentTimeMillis();
+				//System.err.println("'fly safe login (snippet 13)' took " + (e13 - b13) + "ms");
 
+				//long b14 = System.currentTimeMillis();
 				if (!user.isAuthorized("essentials.speed"))
 				{
 					user.getBase().setFlySpeed(0.1f);
 					user.getBase().setWalkSpeed(0.2f);
 				}
-
+				//long e14 = System.currentTimeMillis();
+				//System.err.println("'speed set normal (snippet 14)' took " + (e14 - b14) + "ms");
+				
+				//long b15 = System.currentTimeMillis();
 				user.stopTransaction();
+				//long e15 = System.currentTimeMillis();
+				//System.err.println("'user.stopTransaction()' took " + (e15 - b15) + "ms");
+
+				long timeEnd = System.currentTimeMillis();
+				System.err.println("Total time taked " + (timeEnd - begin)+"ms");
+				//System.err.println("Stats done by Samistine, took a good chunk of time to type all that stuff in :P");
 			}
 		}
 
@@ -469,7 +528,7 @@ public class EssentialsPlayerListener implements Listener
 	{
 		final User user = ess.getUser(event.getPlayer());
 		if ((user.getBase().getGameMode() != GameMode.CREATIVE && user.getBase().getGameMode() != GameMode.SPECTATOR)
-				&& !user.isAuthorized("essentials.fly"))
+			&& !user.isAuthorized("essentials.fly"))
 		{
 			user.getBase().setFallDistance(0f);
 			user.getBase().setAllowFlight(false);
